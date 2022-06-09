@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { nanoid } from 'nanoid';
 import InputForm from './InputForm';
 import Filter from './Filter';
 import ContactList from './ContactList';
@@ -14,11 +15,10 @@ export class App extends Component {
     search: '',
   };
 
-  onSubmitForm = ({ name, number, id }) => {
-    console.log(this.isPresent(name));
+  onSubmitForm = ({ name, number }) => {
     if (!this.isPresent(name)) {
       this.setState(({ contacts }) => ({
-        contacts: [{ name, number, id }, ...contacts],
+        contacts: [{ name, number, id: nanoid() }, ...contacts],
       }));
     } else {
       alert(`${name} is present in contacts`);
@@ -27,15 +27,19 @@ export class App extends Component {
 
   isPresent = chekingName => {
     const { contacts } = this.state;
-    return contacts.find(element => element.name === chekingName);
+    return contacts.find(
+      element =>
+        element.name.toLocaleLowerCase() === chekingName.toLocaleLowerCase()
+    );
   };
 
   onChange = e => {
     const { value } = e.target;
-    this.setState(({ contacts }) => ({
-      contacts,
+    this.setState({
       search: value,
-    }));
+    });
+
+    console.log(this.state);
   };
 
   getFilteredContacts = () => {
@@ -50,10 +54,9 @@ export class App extends Component {
   onClicktDeleteButton = id => {
     const { contacts } = this.state;
     const notDeletingContacts = contacts.filter(contact => contact.id !== id);
-    this.setState(({ search }) => ({
+    this.setState({
       contacts: [...notDeletingContacts],
-      search,
-    }));
+    });
   };
 
   render() {
